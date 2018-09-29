@@ -26,4 +26,11 @@
     <string name="logging_in">Logging In</string>
     <string name="no_response">Could not retrive your data! Are you registered with us?</string>
     <string name="fetching_data">Fetching Data</string>
+    <string name="cannot_be_empty">Cannot be Empty</string>
+    <string name="apply">Apply for a Leave</string>
+    <string name="apply_success">Successfully Applied</string>
+    <string name="dismiss">Cancel</string>
+    <string name="enter_reason">Enter Reason</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
 </resources>

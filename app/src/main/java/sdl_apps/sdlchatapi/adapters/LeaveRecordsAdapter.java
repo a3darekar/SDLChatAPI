@@ -35,9 +35,12 @@ public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapte
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(LeaveRecordsAdapter.ViewHolder holder, int position) {
-        holder.tvType.setText(String.format("Type of Leave: " + leaverecords.get(position).getReason()));
-        holder.tvCount.setText(String.format("Available count: " + leaverecords.get(position).getStatus()));
-        holder.tvDate.setText("Date " + String.valueOf(leaverecords.get(position).getDays()));
+        holder.status.setText(String.format("Status: " + leaverecords.get(position).getReason()));
+        holder.reason.setText(String.format("Reason: " + leaverecords.get(position).getStatus()));
+        holder.tvDate.setText("Submitted Date " + String.valueOf(leaverecords.get(position).getDays()));
+        holder.from.setText(" From Date " + String.valueOf(leaverecords.get(position).getFrom_date()));
+        holder.to.setText("To Date " + String.valueOf(leaverecords.get(position).getTo_date()));
+
     }
 
     @Override
@@ -46,13 +49,15 @@ public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvCount, tvType, tvDate;
+        private TextView reason, status, tvDate, from, to;
         public ViewHolder(View itemView) {
             super(itemView);
 
-            tvCount = itemView.findViewById(R.id.tvReason);
-            tvType = itemView.findViewById(R.id.tvStatus);
+            reason = itemView.findViewById(R.id.tvReason);
+            status = itemView.findViewById(R.id.tvStatus);
             tvDate = itemView.findViewById(R.id.tvdate);
+            from = itemView.findViewById( R.id.from_date );
+            to = itemView.findViewById( R.id.todate );
         }
     }
 }

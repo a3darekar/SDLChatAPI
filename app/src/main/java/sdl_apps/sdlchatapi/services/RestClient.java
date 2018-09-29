@@ -52,4 +52,13 @@ public interface RestClient {
             @Header("Authorization") String token
     );
 
+    @GET(GET_LEAVE_RECORDS_URL)
+    Call<LeaveRecords> applyLeave(
+            @Header("Authorization") String token,
+            RequestBody reason,
+            RequestBody s1,
+            RequestBody s2,
+            RequestBody submit_date,
+            RequestBody pk
+    );
 }

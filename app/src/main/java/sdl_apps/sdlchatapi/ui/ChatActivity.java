@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import sdl_apps.sdlchatapi.R;
+import sdl_apps.sdlchatapi.utils.Constants;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatView mChatView;
@@ -185,6 +186,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public long generateNumber()
     {
-        return (long)(Math.random()*100000 + 3333300000L);
+        long session = 1234560000 + Constants.user.getPk();
+        return session;
     }
 }

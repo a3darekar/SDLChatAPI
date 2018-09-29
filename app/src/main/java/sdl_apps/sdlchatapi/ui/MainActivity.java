@@ -1,6 +1,9 @@
 package sdl_apps.sdlchatapi.ui;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -8,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,16 +21,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 import sdl_apps.sdlchatapi.R;
 import sdl_apps.sdlchatapi.adapters.LeaveRecordsAdapter;
 import sdl_apps.sdlchatapi.adapters.LeavesAdapter;
@@ -52,6 +68,8 @@ public class MainActivity extends AppCompatActivity
     HashMap<String, String> userDetails;
     private RecyclerView recyclerView;
     private ProgressDialog progressDialog;
+    private AlertDialog alertDialog;
+    EditText ReasonView, from, to;
 
 
     @Override
@@ -81,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         apply.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make( navigationView, "Yet to Implement!", Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
+                apply();
             }
         } );
 
@@ -94,6 +112,132 @@ public class MainActivity extends AppCompatActivity
         navigationView = findViewById( R.id.nav_view );
         navigationView.setNavigationItemSelectedListener( this );
     }
+
+    private void apply() {
+        final User user = Constants.user;
+        final String token = "Token " + userDetails.get(loginManager.LOGIN_KEY);
+
+
+        final Calendar myCalendar = Calendar.getInstance();
+
+
+        View view1 = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_apply, null);
+        ReasonView = view1.findViewById(R.id.ReasonView);
+
+        final String submit = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        from = (EditText) view1.findViewById(R.id.from);
+        to = (EditText) view1.findViewById(R.id.to);
+
+        from.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                          int dayOfMonth) {
+                        myCalendar.set(Calendar.YEAR, year);
+                        myCalendar.set(Calendar.MONTH, monthOfYear);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        from.setText( year + "-" + monthOfYear + "-" + dayOfMonth );
+                    }
+
+                };
+                new DatePickerDialog(MainActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        to.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                          int dayOfMonth) {
+                        myCalendar.set(Calendar.YEAR, year);
+                        myCalendar.set(Calendar.MONTH, monthOfYear);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        to.setText( year + "-" + monthOfYear + "-" + dayOfMonth );
+                    }
+
+                };
+                new DatePickerDialog(MainActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            if (view1.getParent() != null) {
+                ((ViewGroup) view1.getParent()).removeView(view1);
+            }
+            builder.setView(view1);
+            builder.setPositiveButton(getString(R.string.apply), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    {
+                        if (ReasonView.getText().toString().isEmpty()) {
+                            ReasonView.setError( getString( R.string.cannot_be_empty ) );
+                        } else if (from.toString().isEmpty()) {
+
+                        } else if (to.toString().isEmpty()) {
+
+                        } else {
+                            RequestBody reason = RequestBody.create( MediaType.parse("text/plain"), ReasonView.getText().toString());
+                            RequestBody from_date = RequestBody.create(MediaType.parse("text/plain"), from.getText().toString());
+                            RequestBody to_date = RequestBody.create(MediaType.parse("text/plain"), to.getText().toString());
+                            RequestBody submit_date = RequestBody.create(MediaType.parse("text/plain"), submit );
+                            RequestBody pk = RequestBody.create(MediaType.parse("text/plain"), String.valueOf( user.getPk() ) );
+
+                            RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+                            Call<LeaveRecords> call = client.applyLeave(token, reason, from_date, to_date, submit_date, pk);
+
+                            call.enqueue( new Callback<LeaveRecords>() {
+                                @Override
+                                public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
+                                    Toast.makeText( MainActivity.this, R.string.apply_success, Toast.LENGTH_SHORT ).show();
+                                    initUI( R.id.available );
+                                }
+
+                                @Override
+                                public void onFailure(Call<LeaveRecords> call, Throwable t) {
+
+                                }
+                            } );
+                        }
+                    }
+                }
+            });
+
+            builder.setCancelable(false);
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    ReasonView.setText("");
+                }
+            });
+
+            alertDialog = builder.create();
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.dismiss),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ReasonView.setText("");
+                            if (alertDialog.isShowing()) {
+                                alertDialog.dismiss();
+                            }
+                        }
+                    });
+            if (!alertDialog.isShowing()) {
+                alertDialog.show();
+            }
+        }
 
     private void initUI(int id) {
         //fetch Logged in User

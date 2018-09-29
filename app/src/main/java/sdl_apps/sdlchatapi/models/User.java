@@ -1,5 +1,7 @@
 package sdl_apps.sdlchatapi.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
     int Pk;
     String email;
