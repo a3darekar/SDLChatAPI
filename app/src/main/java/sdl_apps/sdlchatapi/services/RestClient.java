@@ -1,9 +1,12 @@
 package sdl_apps.sdlchatapi.services;
 
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
@@ -23,7 +26,7 @@ public interface RestClient {
 
     public static String GET_LEAVE_RECORDS_URL = "/api/leaverecords/";
 
-    public static String GET_PENDING_LEAVES_URL = "/api/leaverecords?status=pending/";
+    public static String GET_PENDING_LEAVES_URL = "/api/leaverecords?status=pending";
 
     @Multipart
     @POST(LOGIN_URL)
@@ -52,13 +55,13 @@ public interface RestClient {
             @Header("Authorization") String token
     );
 
-    @GET(GET_LEAVE_RECORDS_URL)
+    @POST(GET_LEAVE_RECORDS_URL)
+    @FormUrlEncoded
     Call<LeaveRecords> applyLeave(
             @Header("Authorization") String token,
-            RequestBody reason,
-            RequestBody s1,
-            RequestBody s2,
-            RequestBody submit_date,
-            RequestBody pk
+            @Field("reason") String reason,
+            @Field("to_date") Date from,
+            @Field("from_date") Date to,
+            @Field("submit_date") Date submit_date
     );
 }

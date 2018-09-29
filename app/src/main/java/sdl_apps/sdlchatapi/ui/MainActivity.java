@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity
         View view1 = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_apply, null);
         ReasonView = view1.findViewById(R.id.ReasonView);
 
-        final String submit = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        final Date submit = myCalendar.getTime();
 
         from = (EditText) view1.findViewById(R.id.from);
         to = (EditText) view1.findViewById(R.id.to);
@@ -189,14 +189,14 @@ public class MainActivity extends AppCompatActivity
                         } else if (to.toString().isEmpty()) {
 
                         } else {
-                            RequestBody reason = RequestBody.create( MediaType.parse("text/plain"), ReasonView.getText().toString());
-                            RequestBody from_date = RequestBody.create(MediaType.parse("text/plain"), from.getText().toString());
-                            RequestBody to_date = RequestBody.create(MediaType.parse("text/plain"), to.getText().toString());
-                            RequestBody submit_date = RequestBody.create(MediaType.parse("text/plain"), submit );
-                            RequestBody pk = RequestBody.create(MediaType.parse("text/plain"), String.valueOf( user.getPk() ) );
+                            String reason = ReasonView.getText().toString();
+                            Date from_date = (Date) from.getText();
+                            Date to_date = (Date) to.getText();
+                            Date submit_date = submit;
+                            int pk = user.getPk();
 
                             RestClient client = RetrofitServiceGenerator.config(RestClient.class);
-                            Call<LeaveRecords> call = client.applyLeave(token, reason, from_date, to_date, submit_date, pk);
+                            Call<LeaveRecords> call = client.applyLeave(token, reason, from_date, to_date, submit_date);
 
                             call.enqueue( new Callback<LeaveRecords>() {
                                 @Override

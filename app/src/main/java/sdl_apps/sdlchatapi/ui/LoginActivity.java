@@ -349,12 +349,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         call.enqueue(new Callback<User >() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                progressDialog.dismiss();
-                User user = response.body();
-                loginManager.createLoginSession(user);
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                if(response.code() == 200) {
+                    progressDialog.dismiss();
+                    User user = response.body();
+                    loginManager.createLoginSession(user);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    progressDialog.dismiss();
+                    // something went completely south (like no internet connection)
+                    mEmailView.setText( null );
+                    mPasswordView.setText( null );
+                    Toast.makeText( LoginActivity.this, "Something Went Wrong.. Please Check your credientials", Toast.LENGTH_SHORT ).show();
+                    Log.d("Error", "Wrong Credentials");
+                }
             }
 
             @Override

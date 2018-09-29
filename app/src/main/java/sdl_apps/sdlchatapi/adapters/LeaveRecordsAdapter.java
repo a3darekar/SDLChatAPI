@@ -37,10 +37,9 @@ public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapte
     public void onBindViewHolder(LeaveRecordsAdapter.ViewHolder holder, int position) {
         holder.status.setText(String.format("Status: " + leaverecords.get(position).getReason()));
         holder.reason.setText(String.format("Reason: " + leaverecords.get(position).getStatus()));
-        holder.tvDate.setText("Submitted Date " + String.valueOf(leaverecords.get(position).getDays()));
+        holder.tvDate.setText("Submitted Date " + String.valueOf(leaverecords.get(position).getSubmit_date()));
         holder.from.setText(" From Date " + String.valueOf(leaverecords.get(position).getFrom_date()));
         holder.to.setText("To Date " + String.valueOf(leaverecords.get(position).getTo_date()));
-
     }
 
     @Override

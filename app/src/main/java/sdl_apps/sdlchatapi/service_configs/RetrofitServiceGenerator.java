@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitServiceGenerator {
 
-    public static final String API_BASE_URL = "https://15239b97.ngrok.io/";
+    public static final String API_BASE_URL = "https://adarekar.pythonanywhere.com/";
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
