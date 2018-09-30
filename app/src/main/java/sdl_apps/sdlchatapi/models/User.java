@@ -3,21 +3,20 @@ package sdl_apps.sdlchatapi.models;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
+    @SerializedName("pk")
     int Pk;
     String email;
     String key;
     String first_name;
-
+    String last_name;
+    String username;
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
 
-    String last_name;
-    String username;
     @Override
     public String toString() {
         return "User{" +

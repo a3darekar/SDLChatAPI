@@ -3,24 +3,21 @@ package sdl_apps.sdlchatapi.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.util.SortedList;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -34,11 +31,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,8 +49,8 @@ import sdl_apps.sdlchatapi.models.User;
 import sdl_apps.sdlchatapi.service_configs.ProgressDialogConfig;
 import sdl_apps.sdlchatapi.service_configs.RetrofitServiceGenerator;
 import sdl_apps.sdlchatapi.services.RestClient;
+import sdl_apps.sdlchatapi.utils.Constants;
 
-import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
@@ -79,10 +80,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_login );
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById( R.id.email );
+        mEmailView = findViewById(R.id.email);
         populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById( R.id.password );
+        mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener( new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -94,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         } );
 
-        Button mEmailSignInButton = (Button) findViewById( R.id.email_sign_in_button );
+        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener( new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -339,7 +340,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void authenticate() {
         RetrofitServiceGenerator retrofit = new RetrofitServiceGenerator();
-        RestClient client =  retrofit.config(RestClient.class);
+        final RestClient client = RetrofitServiceGenerator.config(RestClient.class);
         final ProgressDialog progressDialog = ProgressDialogConfig.config(LoginActivity.this, getString(R.string.verifying));
         RequestBody emailBody = RequestBody.create(MediaType.parse("text/plain"), mEmailView.getText().toString());
         RequestBody passwordBody = RequestBody.create( MediaType.parse("text/plain"), mPasswordView.getText().toString());
@@ -352,7 +353,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if(response.code() == 200) {
                     progressDialog.dismiss();
                     User user = response.body();
+                    Constants.user = user;
+                    FirebaseApp.initializeApp(LoginActivity.this);
+
                     loginManager.createLoginSession(user);
+                    FirebaseInstanceId.getInstance().getInstanceId();
+                    String token = Constants.getFCMToken();
+                    System.out.println("\nToken " + token + "\n");
+                    String auth_token = "Token " + user.getKey();
+                    String name = user.getEmail();
+                    Call<ResponseBody> fcm_register = client.registerFCM(auth_token, name, token, true, "android");
+                    fcm_register.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Log.d("Token Status", String.valueOf(response.code()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();

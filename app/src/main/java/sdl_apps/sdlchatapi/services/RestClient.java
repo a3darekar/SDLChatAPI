@@ -1,9 +1,9 @@
 package sdl_apps.sdlchatapi.services;
 
-import java.util.Date;
 import java.util.List;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -18,15 +18,17 @@ import sdl_apps.sdlchatapi.models.User;
 
 public interface RestClient {
 
-    public static String LOGIN_URL = "/auth/rest/login/";
+    String LOGIN_URL = "/auth/rest/login/";
 
-    public static String GET_USER_URL = "/auth/rest/user/";
+    String GET_USER_URL = "/auth/rest/user/";
 
-    public static String GET_LEAVES_URL = "/api/leaves/";
+    String GET_LEAVES_URL = "/api/leaves/";
 
-    public static String GET_LEAVE_RECORDS_URL = "/api/leaverecords/";
+    String GET_LEAVE_RECORDS_URL = "/api/leaverecords/";
 
-    public static String GET_PENDING_LEAVES_URL = "/api/leaverecords?status=pending";
+    String GET_PENDING_LEAVES_URL = "/api/leaverecords?status=pending";
+
+    String FCM_REGISTRATION = "/api/devices/";
 
     @Multipart
     @POST(LOGIN_URL)
@@ -60,8 +62,17 @@ public interface RestClient {
     Call<LeaveRecords> applyLeave(
             @Header("Authorization") String token,
             @Field("reason") String reason,
-            @Field("to_date") Date from,
-            @Field("from_date") Date to,
-            @Field("submit_date") Date submit_date
+            @Field("to_date") String from,
+            @Field("from_date") String to
+    );
+
+    @POST(FCM_REGISTRATION)
+    @FormUrlEncoded
+    Call<ResponseBody> registerFCM(
+            @Header("Authorization") String auth_token,
+            @Field("name") String name,
+            @Field("registration_id") String token,
+            @Field("active") boolean active,
+            @Field("type") String type
     );
 }

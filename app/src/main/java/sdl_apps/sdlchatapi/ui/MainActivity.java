@@ -7,42 +7,34 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 import sdl_apps.sdlchatapi.R;
 import sdl_apps.sdlchatapi.adapters.LeaveRecordsAdapter;
 import sdl_apps.sdlchatapi.adapters.LeavesAdapter;
@@ -53,8 +45,6 @@ import sdl_apps.sdlchatapi.models.User;
 import sdl_apps.sdlchatapi.service_configs.ProgressDialogConfig;
 import sdl_apps.sdlchatapi.service_configs.RetrofitServiceGenerator;
 import sdl_apps.sdlchatapi.services.RestClient;
-import sdl_apps.sdlchatapi.ui.ChatActivity;
-import sdl_apps.sdlchatapi.ui.LoginActivity;
 import sdl_apps.sdlchatapi.utils.Constants;
 
 
@@ -79,14 +69,15 @@ public class MainActivity extends AppCompatActivity
         loginManager = new LoginManager( MainActivity.this );
 
         initSideBar();
+
         initUI(R.id.available);
     }
 
     private void initSideBar() {
-        Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar( toolbar );
 
-        FloatingActionButton chat = (FloatingActionButton) findViewById( R.id.start_chatting );
+        FloatingActionButton chat = findViewById(R.id.start_chatting);
         chat.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,7 +86,7 @@ public class MainActivity extends AppCompatActivity
             }
         } );
 
-        FloatingActionButton apply = (FloatingActionButton) findViewById( R.id.apply );
+        FloatingActionButton apply = findViewById(R.id.apply);
         apply.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,7 +94,7 @@ public class MainActivity extends AppCompatActivity
             }
         } );
 
-        DrawerLayout drawer = (DrawerLayout) findViewById( R.id.drawer_layout );
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
         drawer.addDrawerListener( toggle );
@@ -124,52 +115,54 @@ public class MainActivity extends AppCompatActivity
         View view1 = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_apply, null);
         ReasonView = view1.findViewById(R.id.ReasonView);
 
-        final Date submit = myCalendar.getTime();
+        from = view1.findViewById(R.id.from);
+        to = view1.findViewById(R.id.to);
 
-        from = (EditText) view1.findViewById(R.id.from);
-        to = (EditText) view1.findViewById(R.id.to);
-
-        from.setOnClickListener(new View.OnClickListener() {
+        from.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
-            public void onClick(View v) {
-                final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                          int dayOfMonth) {
-                        myCalendar.set(Calendar.YEAR, year);
-                        myCalendar.set(Calendar.MONTH, monthOfYear);
-                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        from.setText( year + "-" + monthOfYear + "-" + dayOfMonth );
-                    }
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+                            myCalendar.set(Calendar.YEAR, year);
+                            myCalendar.set(Calendar.MONTH, monthOfYear);
+                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            from.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
+                        }
 
-                };
-                new DatePickerDialog(MainActivity.this, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                    };
+                    new DatePickerDialog(MainActivity.this, date, myCalendar
+                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                }
             }
         });
 
-        to.setOnClickListener(new View.OnClickListener() {
+        to.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
-            public void onClick(View v) {
-                final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                          int dayOfMonth) {
-                        myCalendar.set(Calendar.YEAR, year);
-                        myCalendar.set(Calendar.MONTH, monthOfYear);
-                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        to.setText( year + "-" + monthOfYear + "-" + dayOfMonth );
-                    }
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+                            myCalendar.set(Calendar.YEAR, year);
+                            myCalendar.set(Calendar.MONTH, monthOfYear);
+                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            to.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
+                        }
 
-                };
-                new DatePickerDialog(MainActivity.this, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                    };
+                    new DatePickerDialog(MainActivity.this, date, myCalendar
+                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                }
             }
         });
 
@@ -178,6 +171,7 @@ public class MainActivity extends AppCompatActivity
                 ((ViewGroup) view1.getParent()).removeView(view1);
             }
             builder.setView(view1);
+        builder.setMessage(R.string.apply);
             builder.setPositiveButton(getString(R.string.apply), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -190,18 +184,18 @@ public class MainActivity extends AppCompatActivity
 
                         } else {
                             String reason = ReasonView.getText().toString();
-                            Date from_date = (Date) from.getText();
-                            Date to_date = (Date) to.getText();
-                            Date submit_date = submit;
+                            String from_date = from.getText().toString();
+                            String to_date = to.getText().toString();
                             int pk = user.getPk();
 
                             RestClient client = RetrofitServiceGenerator.config(RestClient.class);
-                            Call<LeaveRecords> call = client.applyLeave(token, reason, from_date, to_date, submit_date);
+                            Call<LeaveRecords> call = client.applyLeave(token, reason, from_date, to_date);
 
                             call.enqueue( new Callback<LeaveRecords>() {
                                 @Override
                                 public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
                                     Toast.makeText( MainActivity.this, R.string.apply_success, Toast.LENGTH_SHORT ).show();
+                                    Log.d("POST response", String.valueOf(response.code()));
                                     initUI( R.id.available );
                                 }
 
@@ -314,7 +308,7 @@ public class MainActivity extends AppCompatActivity
                 try{
                     for(int i = 0; i < response.body().size(); i++){
 
-                        LeaveRecords leave = (LeaveRecords) response.body().get(i);
+                        LeaveRecords leave = response.body().get(i);
                         leaves.add(leave);
 
                     }
@@ -355,7 +349,7 @@ public class MainActivity extends AppCompatActivity
                 try{
                     for(int i = 0; i < response.body().size(); i++){
 
-                        LeaveRecords leave = (LeaveRecords) response.body().get(i);
+                        LeaveRecords leave = response.body().get(i);
                         leaves.add(leave);
 
                     }
@@ -396,7 +390,7 @@ public class MainActivity extends AppCompatActivity
                 try{
                     for(int i = 0; i < response.body().size(); i++){
 
-                        Leaves leave = (Leaves) response.body().get(i);
+                        Leaves leave = response.body().get(i);
                         leaves.add(leave);
 
                     }
@@ -424,7 +418,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById( R.id.drawer_layout );
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen( GravityCompat.START )) {
             drawer.closeDrawer( GravityCompat.START );
         } else {
@@ -468,7 +462,7 @@ public class MainActivity extends AppCompatActivity
             initUI(id);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById( R.id.drawer_layout );
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer( GravityCompat.START );
         return true;
     }
