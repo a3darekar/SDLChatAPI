@@ -67,6 +67,6 @@ public class User {
     }
 
     public String getName() {
-        return first_name + last_name;
+        return first_name + " " + last_name;
     }
 }

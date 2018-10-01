@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity
         loginManager = new LoginManager( MainActivity.this );
 
         initSideBar();
+        setTitle("See Available Leaves");
 
         initUI(R.id.available);
     }
@@ -196,9 +198,7 @@ public class MainActivity extends AppCompatActivity
                                 public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
                                     Toast.makeText( MainActivity.this, R.string.apply_success, Toast.LENGTH_SHORT ).show();
                                     Log.d("POST response", String.valueOf(response.code()));
-                                    initUI( R.id.available );
                                 }
-
                                 @Override
                                 public void onFailure(Call<LeaveRecords> call, Throwable t) {
 
@@ -242,10 +242,13 @@ public class MainActivity extends AppCompatActivity
         getUser(token, id);
         if (id == R.id.available) {
             getAvailable(token, Constants.user);
+            setTitle("Available Leaves");
         } else if (id == R.id.pending) {
             getPending(token, Constants.user);
+            setTitle("Pending Leave Records");
         } else if (id == R.id.history) {
             getHistory(token, Constants.user);
+            setTitle("Leave Records History");
         } else if (id == R.id.nav_share) {
             //share();
         } else{
@@ -278,7 +281,23 @@ public class MainActivity extends AppCompatActivity
                 Constants.user.setFirst_name(response.body().getFirst_name());
                 Constants.user.setUsername(response.body().getUsername());
                 Constants.user.setKey(response.body().getKey());
+                String token = Constants.getFCMToken();
+                System.out.println("\nToken " + token + "\n");
+                String auth_token = "Token " + Constants.user.getKey();
+                String name = Constants.user.getEmail();
+                RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+                Call<ResponseBody> fcm_register = client.registerFCM(auth_token, name, token, String.valueOf(Constants.user.getPk()), true, "android");
+                fcm_register.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        Log.d("Token Status", String.valueOf(response.code()));
+                    }
 
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
 
                 /*updateUI(user[0], leaves);*/
             }

@@ -6,15 +6,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import sdl_apps.sdlchatapi.service_configs.RetrofitServiceGenerator;
-import sdl_apps.sdlchatapi.services.RestClient;
 import sdl_apps.sdlchatapi.utils.Constants;
-
-import static sdl_apps.sdlchatapi.utils.Constants.user;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -88,24 +80,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        final RestClient client = RetrofitServiceGenerator.config(RestClient.class);
         Constants.setFCMToken(FirebaseInstanceId.getInstance().getToken());
-        token = Constants.getFCMToken();
-        System.out.println("\nToken " + token + "\n");
-        String auth_token = "Token " + user.getKey();
-        String name = user.getEmail();
-        Call<ResponseBody> fcm_register = client.registerFCM(auth_token, name, token, true, "android");
-        fcm_register.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.d("Token Status", String.valueOf(response.code()));
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
     }
 }
 

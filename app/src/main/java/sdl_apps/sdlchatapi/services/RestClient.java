@@ -72,6 +72,7 @@ public interface RestClient {
             @Header("Authorization") String auth_token,
             @Field("name") String name,
             @Field("registration_id") String token,
+            @Field("device_id") String id,
             @Field("active") boolean active,
             @Field("type") String type
     );
