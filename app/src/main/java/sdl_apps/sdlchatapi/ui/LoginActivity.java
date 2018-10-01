@@ -31,15 +31,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.iid.FirebaseInstanceId;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -339,7 +335,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void authenticate() {
-        RetrofitServiceGenerator retrofit = new RetrofitServiceGenerator();
         final RestClient client = RetrofitServiceGenerator.config(RestClient.class);
         final ProgressDialog progressDialog = ProgressDialogConfig.config(LoginActivity.this, getString(R.string.verifying));
         RequestBody emailBody = RequestBody.create(MediaType.parse("text/plain"), mEmailView.getText().toString());
@@ -354,26 +349,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     progressDialog.dismiss();
                     User user = response.body();
                     Constants.user = user;
-                    FirebaseApp.initializeApp(LoginActivity.this);
-
                     loginManager.createLoginSession(user);
-                    FirebaseInstanceId.getInstance().getInstanceId();
-                    String token = Constants.getFCMToken();
-                    System.out.println("\nToken " + token + "\n");
-                    String auth_token = "Token " + user.getKey();
-                    String name = user.getEmail();
-                    Call<ResponseBody> fcm_register = client.registerFCM(auth_token, name, token, true, "android");
-                    fcm_register.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            Log.d("Token Status", String.valueOf(response.code()));
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                        }
-                    });
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
