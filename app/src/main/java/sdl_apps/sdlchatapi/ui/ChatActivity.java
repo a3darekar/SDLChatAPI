@@ -5,9 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
@@ -73,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
         mChatView.setMessageMarginTop(5);
         mChatView.setMessageMarginBottom(5);
 
-        final String Token = "Bearer 684869cd8cb84ef89e469b789614a632";
+        final String Token = "Bearer 2d3b646176f94c0389baf5234adba9cc";
 
         final String url = "https://api.api.ai/v1/query?v=20150910&lang=en&sessionId=" + generateNumber() + "&query=";
 
@@ -127,14 +127,12 @@ public class ChatActivity extends AppCompatActivity {
                 InputStream stream = connection.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(stream));
                 StringBuffer buffer = new StringBuffer();
-                String line = "";
+                String line;
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line+"\n");
-                    Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
-
+                    Log.d("Response: ", "> " + line);
                 }
-
                 return buffer.toString();
 
 
@@ -169,15 +167,17 @@ public class ChatActivity extends AppCompatActivity {
                 JSONObject fulfillment = jsonresult.getJSONObject("fulfillment");
                 String speech = fulfillment.getString("speech");
 
-                mChatView = findViewById(R.id.my_chat_view);
-                Message recieved_message = new Message.Builder()
-                        .setUser(bot)
-                        .setRight(false)
-                        .setText(speech)
-                        .hideIcon(true)
-                        .build();
+                if (speech != null) {
+                    mChatView = findViewById(R.id.my_chat_view);
+                    Message recieved_message = new Message.Builder()
+                            .setUser(bot)
+                            .setRight(false)
+                            .setText(speech)
+                            .hideIcon(true)
+                            .build();
 
-                mChatView.send(recieved_message);
+                    mChatView.send(recieved_message);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -186,7 +186,6 @@ public class ChatActivity extends AppCompatActivity {
 
     public long generateNumber()
     {
-        long session = 1234560000 + Constants.user.getPk();
-        return session;
+        return 1234560000 + Constants.user.getPk();
     }
 }
