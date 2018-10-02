@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -28,17 +27,6 @@ public class RetrofitServiceGenerator {
 
     public static <S> S createService(Class<S> serviceClass) {
         return createService(serviceClass, null);
-    }
-
-    public static <S> S createService(
-            Class<S> serviceClass, String clientId, String clientSecret) {
-        if (!TextUtils.isEmpty(clientId)
-                && !TextUtils.isEmpty(clientSecret)) {
-            String authToken = Credentials.basic(clientId, clientSecret);
-            return createService(serviceClass, authToken);
-        }
-
-        return createService(serviceClass, null, null);
     }
 
     public static <S> S createService(

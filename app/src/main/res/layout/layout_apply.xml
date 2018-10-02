@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:layout_width="300dp"
+<RelativeLayout android:layout_width="350dp"
     android:layout_height="200dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
 
     <EditText
         android:id="@+id/ReasonView"
         android:clickable="true"
-        android:layout_marginLeft="75dp"
+        android:layout_marginStart="75dp"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_reason"/>
+        android:hint="@string/enter_reason"
+        android:focusable="true" />
 
     <EditText
         android:id="@+id/from"
         android:layout_width="200dp"
-        android:layout_marginLeft="75dp"
+        android:layout_marginStart="75dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/ReasonView"
         android:clickable="true"
-        android:hint="@string/from" />
+        android:hint="@string/from"
+        android:focusable="true" />
 
     <EditText
         android:id="@+id/to"
         android:clickable="true"
-        android:layout_marginLeft="75dp"
+        android:layout_marginStart="75dp"
         android:layout_width="200dp"
         android:layout_below="@id/from"
         android:layout_height="wrap_content"
-        android:hint="@string/to"/>
+        android:hint="@string/to"
+        android:focusable="true" />
 
 </RelativeLayout>

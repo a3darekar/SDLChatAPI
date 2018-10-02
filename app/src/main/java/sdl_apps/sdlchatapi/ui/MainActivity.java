@@ -1,5 +1,6 @@
 package sdl_apps.sdlchatapi.ui;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         final Calendar myCalendar = Calendar.getInstance();
 
 
-        View view1 = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_apply, null);
+        @SuppressLint("InflateParams") View view1 = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_apply, null);
         ReasonView = view1.findViewById(R.id.ReasonView);
 
         from = view1.findViewById(R.id.from);
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity
                 if (hasFocus) {
                     final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
+                        @SuppressLint("SetTextI18n")
                         @Override
                         public void onDateSet(DatePicker view, int year, int monthOfYear,
                                               int dayOfMonth) {
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity
                 if (hasFocus) {
                     final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
+                        @SuppressLint("SetTextI18n")
                         @Override
                         public void onDateSet(DatePicker view, int year, int monthOfYear,
                                               int dayOfMonth) {
@@ -181,9 +184,9 @@ public class MainActivity extends AppCompatActivity
                         if (ReasonView.getText().toString().isEmpty()) {
                             ReasonView.setError( getString( R.string.cannot_be_empty ) );
                         } else if (from.toString().isEmpty()) {
-
+                            from.setError(getString(R.string.cannot_be_empty));
                         } else if (to.toString().isEmpty()) {
-
+                            to.setError(getString(R.string.cannot_be_empty));
                         } else {
                             String reason = ReasonView.getText().toString();
                             String from_date = from.getText().toString();
@@ -283,22 +286,8 @@ public class MainActivity extends AppCompatActivity
                 Constants.user.setKey(response.body().getKey());
                 String token = Constants.getFCMToken();
                 System.out.println("\nToken " + token + "\n");
-                String auth_token = "Token " + Constants.user.getKey();
                 String name = Constants.user.getEmail();
-                RestClient client = RetrofitServiceGenerator.config(RestClient.class);
-                Call<ResponseBody> fcm_register = client.registerFCM(auth_token, name, token, String.valueOf(Constants.user.getPk()), true, "android");
-                fcm_register.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Log.d("Token Status", String.valueOf(response.code()));
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                    }
-                });
-
+                registerFcm(name, token);
                 /*updateUI(user[0], leaves);*/
             }
 
@@ -484,5 +473,22 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer( GravityCompat.START );
         return true;
+    }
+
+    public void registerFcm(String name, String token) {
+        RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+        Call<ResponseBody> fcm_register = client.registerFCM(name, token, String.valueOf(Constants.user.getPk()), true, "android");
+        fcm_register.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d("Token Status", String.valueOf(response.code()));
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+
     }
 }

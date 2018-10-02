@@ -69,9 +69,8 @@ public interface RestClient {
     @POST(FCM_REGISTRATION)
     @FormUrlEncoded
     Call<ResponseBody> registerFCM(
-            @Header("Authorization") String auth_token,
             @Field("name") String name,
-            @Field("registration_id") String token,
+            @Field("registration_id") String registration_id,
             @Field("device_id") String id,
             @Field("active") boolean active,
             @Field("type") String type

@@ -335,7 +335,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void authenticate() {
-        final RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+        final RestClient client = RetrofitServiceGenerator.createService(RestClient.class);
         final ProgressDialog progressDialog = ProgressDialogConfig.config(LoginActivity.this, getString(R.string.verifying));
         RequestBody emailBody = RequestBody.create(MediaType.parse("text/plain"), mEmailView.getText().toString());
         RequestBody passwordBody = RequestBody.create( MediaType.parse("text/plain"), mPasswordView.getText().toString());
