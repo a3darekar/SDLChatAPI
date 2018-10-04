@@ -55,7 +55,7 @@ public class ChatActivity extends AppCompatActivity {
         //User name
         final ChatUser me = new ChatUser(myId, username, myIcon);
 
-        bot = new ChatUser(1, "ChatBot", BitmapFactory.decodeResource(getResources(), R.drawable.face_1));
+        bot = new ChatUser(1, "Dottie", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round));
 
         mChatView = findViewById(R.id.my_chat_view);
 

@@ -49,6 +49,8 @@ import sdl_apps.sdlchatapi.service_configs.RetrofitServiceGenerator;
 import sdl_apps.sdlchatapi.services.RestClient;
 import sdl_apps.sdlchatapi.utils.Constants;
 
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -238,7 +240,6 @@ public class MainActivity extends AppCompatActivity
 
     private void initUI(int id) {
         //fetch Logged in User
-        loginManager.getUserDetails();
         userDetails = loginManager.getUserDetails();
 
         String token = "Token " + userDetails.get(loginManager.LOGIN_KEY);
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
             //share();
         } else{
-            Snackbar.make( navigationView, "Yet to Implement!", Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
+            Snackbar.make(navigationView, "Yet to Implement!", LENGTH_LONG).setAction("Action", null).show();
         }
 
     }
@@ -284,11 +285,7 @@ public class MainActivity extends AppCompatActivity
                 Constants.user.setFirst_name(response.body().getFirst_name());
                 Constants.user.setUsername(response.body().getUsername());
                 Constants.user.setKey(response.body().getKey());
-                String token = Constants.getFCMToken();
-                System.out.println("\nToken " + token + "\n");
-                String name = Constants.user.getEmail();
-                registerFcm(name, token);
-                /*updateUI(user[0], leaves);*/
+                registerFcm();
             }
 
             @Override
@@ -475,20 +472,25 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void registerFcm(String name, String token) {
-        RestClient client = RetrofitServiceGenerator.config(RestClient.class);
-        Call<ResponseBody> fcm_register = client.registerFCM(name, token, String.valueOf(Constants.user.getPk()), true, "android");
-        fcm_register.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.d("Token Status", String.valueOf(response.code()));
-            }
+    public void registerFcm() {
+        userDetails = loginManager.getUserDetails();
+        String token = userDetails.get(loginManager.FCM_KEY);
+        if (token != null) {
+            RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+            Call<ResponseBody> fcm_register = client.registerFCM(Constants.user.getEmail(), token, String.valueOf(Constants.user.getPk()), true, "android");
+            fcm_register.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Snackbar.make(navigationView, "FCM Registration success!", LENGTH_LONG);
+                }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Snackbar.make(navigationView, "FCM Registration success! Request Failed", LENGTH_LONG);
+                }
+            });
+        } else {
+            Snackbar.make(navigationView, "FCM Registration success! Null Token", LENGTH_LONG);
+        }
     }
 }

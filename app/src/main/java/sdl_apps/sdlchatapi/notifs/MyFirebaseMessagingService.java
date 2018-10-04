@@ -12,8 +12,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Objects;
 
 import sdl_apps.sdlchatapi.R;
+import sdl_apps.sdlchatapi.managers.LoginManager;
 import sdl_apps.sdlchatapi.ui.MainActivity;
-import sdl_apps.sdlchatapi.utils.Constants;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -75,7 +75,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        Constants.setFCMToken(token);
+        LoginManager loginManager = new LoginManager(this);
+        loginManager.setFCM_KEY(token);
     }
 }
 

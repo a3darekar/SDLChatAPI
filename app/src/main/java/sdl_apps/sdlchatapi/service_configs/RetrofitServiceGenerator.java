@@ -12,18 +12,18 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static retrofit2.Retrofit.Builder;
+
 public class RetrofitServiceGenerator {
 
-    public static final String API_BASE_URL = "https://adarekar.pythonanywhere.com/";
+    private static final String API_BASE_URL = "https://adarekar.pythonanywhere.com/";
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-    private static Retrofit.Builder builder =
-            new Retrofit.Builder()
+    private static Builder builder =
+            new Builder()
                     .baseUrl(API_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
-
-    private static Retrofit retrofit;
 
     public static <S> S createService(Class<S> serviceClass) {
         return createService(serviceClass, null);
@@ -38,10 +38,10 @@ public class RetrofitServiceGenerator {
             if (!httpClient.interceptors().contains(interceptor)) {
                 httpClient.addInterceptor(interceptor);
 
-                builder.client(httpClient.build());
-                retrofit = builder.build();
             }
         }
+        builder.client(httpClient.build());
+        Retrofit retrofit = builder.build();
         return retrofit.create(serviceClass);
     }
 
@@ -57,7 +57,7 @@ public class RetrofitServiceGenerator {
 
         Gson gson = new GsonBuilder().create();
 
-        Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+        Builder retrofitBuilder = new Builder()
                 .baseUrl(API_BASE_URL)
                 .addConverterFactory( GsonConverterFactory.create(gson));
 

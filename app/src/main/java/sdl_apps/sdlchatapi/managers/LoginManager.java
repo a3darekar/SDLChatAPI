@@ -20,6 +20,7 @@ public class LoginManager {
     Context context;
     String PREFERENCE_NAME = "Login Preference";
     String IS_LOGGED_IN = "IsLoggedIn";
+    public String FCM_KEY = "fcm_key";
 
     public LoginManager(Context ctx) {
         this.context = ctx;
@@ -31,10 +32,14 @@ public class LoginManager {
         HashMap<String, String> user = new HashMap<>();
         user.put(LOGIN_EMAIL, preferences.getString(LOGIN_EMAIL, null));
         user.put(LOGIN_KEY, preferences.getString(LOGIN_KEY, null));
+        user.put(FCM_KEY, preferences.getString(FCM_KEY, null));
         return user;
     }
 
-
+    public void setFCM_KEY(String key) {
+        editor.putString(FCM_KEY, key);
+        editor.commit();
+    }
 
     public boolean isLoggedIn() {
         return preferences.getBoolean(IS_LOGGED_IN, false);
