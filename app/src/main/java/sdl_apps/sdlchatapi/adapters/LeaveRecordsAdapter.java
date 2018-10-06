@@ -33,8 +33,17 @@ public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapte
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(LeaveRecordsAdapter.ViewHolder holder, int position) {
-        holder.status.setText(String.format("Status: " + leaverecords.get(position).getStatus()));
-        holder.reason.setText(String.format("Reason: " + leaverecords.get(position).getReason()));
+        holder.reason.setText("Reason: " + leaverecords.get(position).getReason());
+        holder.status.setText("Status: " + leaverecords.get(position).getStatus());
+        String status = leaverecords.get(position).getStatus();
+        if (status.equals("Pending")) {
+            holder.status.setBackgroundResource(R.drawable.eclipse_drawable_warning);
+
+        } else if (status.equals("Approved")) {
+            holder.status.setBackgroundResource(R.drawable.eclipse_drawable_success);
+        } else {
+            holder.status.setBackgroundResource(R.drawable.eclipse_drawable_error);
+        }
         holder.tvDate.setText("Submitted Date " + String.valueOf(leaverecords.get(position).getSubmit_date()));
         holder.from.setText(" From Date " + String.valueOf(leaverecords.get(position).getFrom_date()));
         holder.to.setText("To Date " + String.valueOf(leaverecords.get(position).getTo_date()));
