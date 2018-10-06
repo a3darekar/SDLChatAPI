@@ -12,8 +12,6 @@ import java.util.ArrayList;
 
 import sdl_apps.sdlchatapi.R;
 import sdl_apps.sdlchatapi.models.LeaveRecords;
-import sdl_apps.sdlchatapi.models.Leaves;
-import sdl_apps.sdlchatapi.ui.MainActivity;
 
 public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapter.ViewHolder> {
 
@@ -35,8 +33,8 @@ public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapte
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(LeaveRecordsAdapter.ViewHolder holder, int position) {
-        holder.status.setText(String.format("Status: " + leaverecords.get(position).getReason()));
-        holder.reason.setText(String.format("Reason: " + leaverecords.get(position).getStatus()));
+        holder.status.setText(String.format("Status: " + leaverecords.get(position).getStatus()));
+        holder.reason.setText(String.format("Reason: " + leaverecords.get(position).getReason()));
         holder.tvDate.setText("Submitted Date " + String.valueOf(leaverecords.get(position).getSubmit_date()));
         holder.from.setText(" From Date " + String.valueOf(leaverecords.get(position).getFrom_date()));
         holder.to.setText("To Date " + String.valueOf(leaverecords.get(position).getTo_date()));

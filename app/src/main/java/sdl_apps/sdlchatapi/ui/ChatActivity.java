@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 
 import com.github.bassaer.chatmessageview.model.ChatUser;
@@ -55,7 +54,7 @@ public class ChatActivity extends AppCompatActivity {
         //User name
         final ChatUser me = new ChatUser(myId, username, myIcon);
 
-        bot = new ChatUser(1, "Dottie", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round));
+        bot = new ChatUser(1, "Dottie", BitmapFactory.decodeResource(getResources(), R.drawable.face_2));
 
         mChatView = findViewById(R.id.my_chat_view);
 
@@ -131,7 +130,6 @@ public class ChatActivity extends AppCompatActivity {
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line+"\n");
-                    Log.d("Response: ", "> " + line);
                 }
                 return buffer.toString();
 
