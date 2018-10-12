@@ -36,25 +36,18 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_chat );
-        String username;
-        if (getIntent().hasExtra( "Username" )){
-            username = getIntent().getStringExtra("Username");
-        }else{
-            username = "User";
-        }
-        createChatUsers(username);
+        createChatUsers();
 
     }
 
-    private void createChatUsers(String username) {
+    private void createChatUsers() {
         //User id
-        int myId = 0;
         //User icon
         Bitmap myIcon = BitmapFactory.decodeResource(getResources(), R.drawable.face_2);
         //User name
-        final ChatUser me = new ChatUser(myId, username, myIcon);
+        final ChatUser me = new ChatUser(0, Constants.getUser().getFirst_name(), myIcon);
 
-        bot = new ChatUser(1, "Dottie", BitmapFactory.decodeResource(getResources(), R.drawable.face_2));
+        bot = new ChatUser(1, "Dottie", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_foreground));
 
         mChatView = findViewById(R.id.my_chat_view);
 
@@ -85,7 +78,7 @@ public class ChatActivity extends AppCompatActivity {
                         .setUser(me)
                         .setRight(true)
                         .setText(mChatView.getInputText())
-                        .hideIcon(true)
+                        .hideIcon( true )
                         .build();
                 //Set to chat view
                 String text = mChatView.getInputText();
@@ -111,7 +104,6 @@ public class ChatActivity extends AppCompatActivity {
 
         protected String doInBackground(String... params) {
 
-
             HttpURLConnection connection = null;
             BufferedReader reader = null;
 
@@ -122,7 +114,6 @@ public class ChatActivity extends AppCompatActivity {
                 connection.connect();
 
                 int status = connection.getResponseCode();
-                System.out.println("status= " + status );
                 InputStream stream = connection.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(stream));
                 StringBuffer buffer = new StringBuffer();
@@ -171,7 +162,6 @@ public class ChatActivity extends AppCompatActivity {
                             .setUser(bot)
                             .setRight(false)
                             .setText(speech)
-                            .hideIcon(true)
                             .build();
 
                     mChatView.send(recieved_message);
@@ -182,8 +172,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    public long generateNumber()
-    {
+    public long generateNumber() {
         return 1234560000 + Constants.user.getPk();
     }
 }
