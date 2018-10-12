@@ -359,7 +359,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     mEmailView.setText( null );
                     mPasswordView.setText( null );
                     Toast.makeText( LoginActivity.this, "Something Went Wrong.. Please Check your credientials", Toast.LENGTH_SHORT ).show();
-                    Log.d("Error", "Wrong Credentials");
                 }
             }
 
@@ -370,7 +369,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 mEmailView.setText( null );
                 mPasswordView.setText( null );
                 Toast.makeText( LoginActivity.this, "Something Went Wrong.. Please Check your credientials", Toast.LENGTH_SHORT ).show();
-                Log.d("Error", t.getMessage());
             }
         });
     }

@@ -12,6 +12,9 @@
             android:id="@+id/pending"
             android:title="See Pending Leave Records" />
         <item
+            android:id="@+id/approve_nav"
+            android:title="Approve Leave Records" />
+        <item
             android:id="@+id/history"
             android:title="See Leave Records History" />
     </group>

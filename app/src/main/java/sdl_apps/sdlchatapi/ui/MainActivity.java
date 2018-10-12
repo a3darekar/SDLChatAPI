@@ -38,6 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import sdl_apps.sdlchatapi.R;
+import sdl_apps.sdlchatapi.ui.adapters.ApproveAdapter;
 import sdl_apps.sdlchatapi.ui.adapters.LeaveRecordsAdapter;
 import sdl_apps.sdlchatapi.ui.adapters.LeavesAdapter;
 import sdl_apps.sdlchatapi.managers.LoginManager;
@@ -253,12 +254,56 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.history) {
             getHistory(token, Constants.user);
             setTitle("Leave Records History");
+        }  else if (id == R.id.approve_nav) {
+            getApprove(token, Constants.user);
+            setTitle("Leave Records History");
         } else if (id == R.id.nav_share) {
             //share();
         } else{
             Snackbar.make(navigationView, "Yet to Implement!", LENGTH_LONG).setAction("Action", null).show();
         }
 
+    }
+
+    private void getApprove(String token, final User user) {
+        final ProgressDialog progressDialog = ProgressDialogConfig.config(MainActivity.this, getString(R.string.fetching_data));
+
+        RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+        progressDialog.show();
+
+        final ArrayList<LeaveRecords> leaves = new ArrayList<>();
+        Call<List<LeaveRecords>> call = client.getPendingLeaves(token);
+        call.enqueue(new Callback<List<LeaveRecords>> () {
+            @Override
+            public void onResponse(Call<List<LeaveRecords>> call, Response<List<LeaveRecords>> response) {
+                progressDialog.dismiss();
+                try{
+                    for(int i = 0; i < response.body().size(); i++){
+
+                        LeaveRecords leave = response.body().get(i);
+                        leaves.add(leave);
+
+                    }
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
+                    recyclerView = findViewById(R.id.RecyclerView);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    recyclerView.setAdapter(new ApproveAdapter(MainActivity.this, leaves, user.getFirst_name() + user.getLast_name()));
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, getString(R.string.no_response), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LeaveRecords>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(MainActivity.this, "Something Went Wrong! Please Try Again", Toast.LENGTH_SHORT).show();
+                Log.d(TAG,t.getMessage(), t);
+                loginManager.logOutUser();
+            }
+        });
     }
 
     private void getUser(final String token, final int id) {
