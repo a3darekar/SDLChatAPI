@@ -1,9 +1,11 @@
 package sdl_apps.sdlchatapi.ui.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +14,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import sdl_apps.sdlchatapi.R;
+import sdl_apps.sdlchatapi.managers.LoginManager;
 import sdl_apps.sdlchatapi.models.LeaveRecords;
+import sdl_apps.sdlchatapi.services.service_configs.ProgressDialogConfig;
+import sdl_apps.sdlchatapi.services.service_configs.RetrofitServiceGenerator;
+import sdl_apps.sdlchatapi.services.RestClient;
 
 public class ApproveAdapter extends RecyclerView.Adapter<ApproveAdapter.ViewHolder> {
 
@@ -35,7 +45,7 @@ public class ApproveAdapter extends RecyclerView.Adapter<ApproveAdapter.ViewHold
 
     @SuppressLint("DefaultLocale")
     @Override
-    public void onBindViewHolder(ApproveAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final ApproveAdapter.ViewHolder holder, final int position) {
         holder.reason.setText("Reason: " + leaverecords.get(position).getReason());
         holder.status.setText("Status: " + leaverecords.get(position).getStatus());
         String status = leaverecords.get(position).getStatus();
@@ -47,21 +57,76 @@ public class ApproveAdapter extends RecyclerView.Adapter<ApproveAdapter.ViewHold
         } else {
             holder.status.setBackgroundResource(R.drawable.eclipse_drawable_error);
         }
-        holder.tvDate.setText("Submitted Date " + String.valueOf(leaverecords.get(position).getSubmit_date()));
+        holder.tvDate.setText("Submitted Date " + String.valueOf(leaverecords.get(position).getPk()));
         holder.from.setText(" From Date " + String.valueOf(leaverecords.get(position).getFrom_date()));
         holder.to.setText("To Date " + String.valueOf(leaverecords.get(position).getTo_date()));
 
         holder.approve.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText( context , "Approved!", Snackbar.LENGTH_LONG ).show();
+                leaverecords.get(position).setStatus( "approve" );
+                Log.d("PK:::", String.valueOf( leaverecords.get( position ).getPk() ) );
+                LoginManager loginManager = new LoginManager( context );
+            HashMap<String, String> userDetails;
+            userDetails = loginManager.getUserDetails();
+            String token = userDetails.get(loginManager.LOGIN_KEY);
+            final ProgressDialog progressDialog = ProgressDialogConfig.config(context, context.getString(R.string.logging_in));
+
+            RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+            progressDialog.show();
+
+            Call<LeaveRecords> call = client.approveLeave(token, leaverecords.get(position).getStatus(), leaverecords.get(position).getPk());
+            call.enqueue(new Callback<LeaveRecords>() {
+                @Override
+                public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
+                    progressDialog.dismiss();
+                    if (response.code() == 200)
+                        Toast.makeText( context , "Approved!", Snackbar.LENGTH_LONG ).show();
+                    else
+                        Toast.makeText( context , "Something Went Wrong! Please Try Again", Snackbar.LENGTH_LONG ).show();
+                }
+
+                @Override
+                public void onFailure(Call<LeaveRecords> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(context, "Something Went Wrong! Please Try Again", Toast.LENGTH_SHORT).show();
+                }
+            });
+
             }
         } );
 
         holder.disapprove.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText( context , "Disapproved!", Snackbar.LENGTH_LONG ).show();
+                leaverecords.get(position).setStatus( "approve" );
+                Log.d("PK:::", String.valueOf( leaverecords.get( position ).getPk() ) );
+                LoginManager loginManager = new LoginManager( context );
+                HashMap<String, String> userDetails;
+                userDetails = loginManager.getUserDetails();
+                String token = userDetails.get(loginManager.LOGIN_KEY);
+                final ProgressDialog progressDialog = ProgressDialogConfig.config(context, context.getString(R.string.logging_in));
+
+                RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+                progressDialog.show();
+
+                Call<LeaveRecords> call = client.approveLeave(token, leaverecords.get(position).getStatus(), leaverecords.get(position).getPk());
+                call.enqueue(new Callback<LeaveRecords>() {
+                    @Override
+                    public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
+                        progressDialog.dismiss();
+                        if (response.code() == 200)
+                            Toast.makeText( context , "Approved!", Snackbar.LENGTH_LONG ).show();
+                        else
+                            Toast.makeText( context , "Something Went Wrong! Please Try Again", Snackbar.LENGTH_LONG ).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<LeaveRecords> call, Throwable t) {
+                        progressDialog.dismiss();
+                        Toast.makeText(context, "Something Went Wrong! Please Try Again", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         } );
     }
