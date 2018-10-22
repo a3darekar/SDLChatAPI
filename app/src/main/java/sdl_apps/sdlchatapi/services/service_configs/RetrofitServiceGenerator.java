@@ -1,4 +1,4 @@
-package sdl_apps.sdlchatapi.service_configs;
+package sdl_apps.sdlchatapi.services.service_configs;
 
 import android.text.TextUtils;
 
@@ -16,7 +16,7 @@ import static retrofit2.Retrofit.Builder;
 
 public class RetrofitServiceGenerator {
 
-    private static final String API_BASE_URL = "https://adarekar.pythonanywhere.com/";
+    private static final String API_BASE_URL = "https://adarekar.pythonanywhere.com";
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 

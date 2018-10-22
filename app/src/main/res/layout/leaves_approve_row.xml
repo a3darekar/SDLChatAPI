@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/tvStatus"
+            android:layout_below="@id/tvdate"
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/eclipse_drawable"
@@ -40,10 +40,10 @@
             android:id="@+id/tvdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/tvStatus"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@id/tvStatus"
-            android:layout_marginEnd="10dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/tvStatus"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/eclipse_drawable"
             android:gravity="center_vertical" />
 

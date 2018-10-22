@@ -3,34 +3,67 @@
     android:layout_height="200dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <TextView
+        android:id="@+id/ReasonText"
+        android:text="Reason"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ReasonView"
+        android:layout_alignTop="@id/ReasonView"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        />
 
     <EditText
         android:id="@+id/ReasonView"
         android:clickable="true"
-        android:layout_marginStart="75dp"
+        android:layout_marginStart="125dp"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:hint="@string/enter_reason"
         android:focusable="true" />
 
+    <TextView
+        android:id="@+id/fromtext"
+        android:text="From Date"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/from"
+        android:layout_alignTop="@id/from"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        />
+
     <EditText
         android:id="@+id/from"
         android:layout_width="200dp"
-        android:layout_marginStart="75dp"
+        android:layout_marginStart="125dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/ReasonView"
         android:clickable="true"
-        android:hint="@string/from"
+        android:hint="yyyy-mm-dd"
         android:focusable="true" />
+
+    <TextView
+        android:id="@+id/totext"
+        android:text="To Date"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/to"
+        android:layout_alignTop="@id/to"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        />
+
 
     <EditText
         android:id="@+id/to"
         android:clickable="true"
-        android:layout_marginStart="75dp"
+        android:layout_marginStart="125dp"
         android:layout_width="200dp"
         android:layout_below="@id/from"
         android:layout_height="wrap_content"
-        android:hint="@string/to"
+        android:hint="yyyy-mm-dd"
         android:focusable="true" />
 
 </RelativeLayout>

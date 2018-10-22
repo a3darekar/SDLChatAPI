@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.github.bassaer.chatmessageview.model.ChatUser;
@@ -121,6 +122,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line+"\n");
+                    Log.d("Dottie",line);
                 }
                 return buffer.toString();
 

@@ -1,4 +1,4 @@
-package sdl_apps.sdlchatapi.service_configs;
+package sdl_apps.sdlchatapi.services.service_configs;
 
 import android.app.ProgressDialog;
 import android.content.Context;

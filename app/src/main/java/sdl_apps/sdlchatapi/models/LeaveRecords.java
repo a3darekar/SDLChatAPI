@@ -1,6 +1,9 @@
 package sdl_apps.sdlchatapi.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class LeaveRecords {
+    @SerializedName( "id" )
     int Pk;
     int employee, days;
     String leavetype,status,reason,from_date,to_date,submit_date;

@@ -11,7 +11,9 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import sdl_apps.sdlchatapi.models.LeaveRecords;
 import sdl_apps.sdlchatapi.models.Leaves;
 import sdl_apps.sdlchatapi.models.User;
@@ -23,6 +25,8 @@ public interface RestClient {
     String GET_USER_URL = "/auth/rest/user/";
 
     String GET_LEAVES_URL = "/api/leaves/";
+
+    String GET_LEAVE_APPROVAL_URL = "/api/leaverecords?status=approved";
 
     String GET_LEAVE_RECORDS_URL = "/api/leaverecords/";
 
@@ -41,8 +45,8 @@ public interface RestClient {
             @Header("Authorization") String token
     );
 
-    @GET(GET_LEAVE_RECORDS_URL)
-    Call<List<LeaveRecords>> getLeaveRecords(
+    @GET(GET_LEAVE_APPROVAL_URL)
+    Call<List<LeaveRecords>> getLeaveHistory(
             @Header("Authorization") String token
     );
 
@@ -54,6 +58,12 @@ public interface RestClient {
 
     @GET(GET_PENDING_LEAVES_URL)
     Call<List<LeaveRecords>> getPendingLeaves(
+            @Header("Authorization") String token
+    );
+
+
+    @GET(GET_PENDING_LEAVES_URL)
+    Call<List<LeaveRecords>> getApproved(
             @Header("Authorization") String token
     );
 
@@ -75,4 +85,12 @@ public interface RestClient {
             @Field("active") boolean active,
             @Field("type") String type
     );
+
+    @PUT("/api/leaverecords/{id}/")
+    @FormUrlEncoded
+    Call<LeaveRecords> approveLeave(
+            @Header( "Authorization" ) String token,
+            @Field( "status" ) String status,
+            @Path( "id" ) int id
+        );
 }

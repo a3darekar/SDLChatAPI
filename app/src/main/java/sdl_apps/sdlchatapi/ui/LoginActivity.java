@@ -19,7 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,8 +41,8 @@ import retrofit2.Response;
 import sdl_apps.sdlchatapi.R;
 import sdl_apps.sdlchatapi.managers.LoginManager;
 import sdl_apps.sdlchatapi.models.User;
-import sdl_apps.sdlchatapi.service_configs.ProgressDialogConfig;
-import sdl_apps.sdlchatapi.service_configs.RetrofitServiceGenerator;
+import sdl_apps.sdlchatapi.services.service_configs.ProgressDialogConfig;
+import sdl_apps.sdlchatapi.services.service_configs.RetrofitServiceGenerator;
 import sdl_apps.sdlchatapi.services.RestClient;
 import sdl_apps.sdlchatapi.utils.Constants;
 
@@ -335,7 +334,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void authenticate() {
-        final RestClient client = RetrofitServiceGenerator.createService(RestClient.class);
+        final RestClient client = RetrofitServiceGenerator.config(RestClient.class);
         final ProgressDialog progressDialog = ProgressDialogConfig.config(LoginActivity.this, getString(R.string.verifying));
         RequestBody emailBody = RequestBody.create(MediaType.parse("text/plain"), mEmailView.getText().toString());
         RequestBody passwordBody = RequestBody.create( MediaType.parse("text/plain"), mPasswordView.getText().toString());

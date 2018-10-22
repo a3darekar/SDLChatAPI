@@ -31,7 +31,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.ChatActivity" />
 
-        <service android:name="sdl_apps.sdlchatapi.notifs.MyFirebaseMessagingService">
+        <service android:name=".services.notifs.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>

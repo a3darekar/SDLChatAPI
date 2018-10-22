@@ -45,8 +45,8 @@ import sdl_apps.sdlchatapi.managers.LoginManager;
 import sdl_apps.sdlchatapi.models.LeaveRecords;
 import sdl_apps.sdlchatapi.models.Leaves;
 import sdl_apps.sdlchatapi.models.User;
-import sdl_apps.sdlchatapi.service_configs.ProgressDialogConfig;
-import sdl_apps.sdlchatapi.service_configs.RetrofitServiceGenerator;
+import sdl_apps.sdlchatapi.services.service_configs.ProgressDialogConfig;
+import sdl_apps.sdlchatapi.services.service_configs.RetrofitServiceGenerator;
 import sdl_apps.sdlchatapi.services.RestClient;
 import sdl_apps.sdlchatapi.utils.Constants;
 
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity
                 ((ViewGroup) view1.getParent()).removeView(view1);
             }
             builder.setView(view1);
-        builder.setMessage(R.string.apply);
+        builder.setTitle(R.string.apply);
             builder.setPositiveButton(getString(R.string.apply), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -209,13 +209,13 @@ public class MainActivity extends AppCompatActivity
                                 public void onFailure(Call<LeaveRecords> call, Throwable t) {
 
                                 }
-                            } );
+                            });
                         }
                     }
                 }
             });
 
-            builder.setCancelable(false);
+            builder.setCancelable(true);
             builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialogInterface) {
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity
             setTitle("Leave Records History");
         }  else if (id == R.id.approve_nav) {
             getApprove(token, Constants.user);
-            setTitle("Leave Records History");
+            setTitle("Leave Approval");
         } else if (id == R.id.nav_share) {
             //share();
         } else{
@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity
         progressDialog.show();
 
         final ArrayList<LeaveRecords> leaves = new ArrayList<>();
-        Call<List<LeaveRecords>> call = client.getPendingLeaves(token);
+        Call<List<LeaveRecords>> call = client.getApproved(token);
         call.enqueue(new Callback<List<LeaveRecords>> () {
             @Override
             public void onResponse(Call<List<LeaveRecords>> call, Response<List<LeaveRecords>> response) {
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity
     private void getUser(final String token, final int id) {
         final ProgressDialog progressDialog = ProgressDialogConfig.config(MainActivity.this, getString(R.string.logging_in));
 
-        RestClient client = RetrofitServiceGenerator.createService(RestClient.class, token);
+        RestClient client = RetrofitServiceGenerator.config(RestClient.class);
         progressDialog.show();
 
         final User[] user = new User[1];
@@ -318,19 +318,24 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 progressDialog.dismiss();
-                user[0] = response.body();
-                TextView nameView = findViewById( R.id.name );
-                TextView emailView = findViewById( R.id.email );
-                nameView.setText( user[0].getName() );
-                emailView.setText( user[0].getEmail() );
-                pk = user[0].getPk();
+                if (response.code() == 200) {
+                    user[0] = response.body();
+                    TextView nameView = findViewById( R.id.name );
+                    TextView emailView = findViewById( R.id.email );
+                    nameView.setText( user[0].getName() );
+                    emailView.setText( user[0].getEmail() );
+                    pk = user[0].getPk();
 
-                Constants.user.setPk(response.body().getPk());
-                Constants.user.setEmail(response.body().getEmail());
-                Constants.user.setFirst_name(response.body().getFirst_name());
-                Constants.user.setUsername(response.body().getUsername());
-                Constants.user.setKey(response.body().getKey());
-                registerFcm();
+                    Constants.user.setPk( response.body().getPk() );
+                    Constants.user.setEmail( response.body().getEmail() );
+                    Constants.user.setFirst_name( response.body().getFirst_name() );
+                    Constants.user.setUsername( response.body().getUsername() );
+                    Constants.user.setKey( response.body().getKey() );
+                    registerFcm();
+                }else {
+                    Toast.makeText(MainActivity.this, "Something Went Wrong! Please Try Again", Toast.LENGTH_SHORT).show();
+                    loginManager.logOutUser();
+                }
             }
 
             @Override
@@ -350,7 +355,7 @@ public class MainActivity extends AppCompatActivity
         progressDialog.show();
 
         final ArrayList<LeaveRecords> leaves = new ArrayList<>();
-        Call<List<LeaveRecords>> call = client.getLeaveRecords(token);
+        Call<List<LeaveRecords>> call = client.getLeaveHistory(token);
         call.enqueue(new Callback<List<LeaveRecords>> () {
             @Override
             public void onResponse(Call<List<LeaveRecords>> call, Response<List<LeaveRecords>> response) {
@@ -379,12 +384,11 @@ public class MainActivity extends AppCompatActivity
                 progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, "Something Went Wrong! Please Try Again", Toast.LENGTH_SHORT).show();
                 Log.d(TAG,t.getMessage(), t);
-                loginManager.logOutUser();
             }
         });
     }
 
-    private void getPending(String token, final User user) {
+    private void    getPending(String token, final User user) {
         final ProgressDialog progressDialog = ProgressDialogConfig.config(MainActivity.this, getString(R.string.fetching_data));
 
         RestClient client = RetrofitServiceGenerator.config(RestClient.class);
@@ -420,7 +424,6 @@ public class MainActivity extends AppCompatActivity
                 progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, "Something Went Wrong! Please Try Again", Toast.LENGTH_SHORT).show();
                 Log.d(TAG,t.getMessage(), t);
-                loginManager.logOutUser();
             }
         });
     }
@@ -447,6 +450,8 @@ public class MainActivity extends AppCompatActivity
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
+
+
                     recyclerView = findViewById(R.id.RecyclerView);
                     recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                     recyclerView.setAdapter(new LeavesAdapter(MainActivity.this, leaves, user.getFirst_name() + user.getLast_name()));

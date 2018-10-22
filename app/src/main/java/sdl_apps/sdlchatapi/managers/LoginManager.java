@@ -14,7 +14,6 @@ public class LoginManager {
     public String LOGIN_EMAIL = "email";
     public String LOGIN_KEY = "key";
     public String LOGIN_USERNAME = "username";
-    public String LOGIN_PASSWORD = "password";
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
     Context context;

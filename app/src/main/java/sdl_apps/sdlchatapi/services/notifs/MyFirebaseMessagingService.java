@@ -1,4 +1,4 @@
-package sdl_apps.sdlchatapi.notifs;
+package sdl_apps.sdlchatapi.services.notifs;
 
 import android.app.Notification;
 import android.app.NotificationManager;

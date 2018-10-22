@@ -23,6 +23,7 @@ public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapte
         this.leaverecords = leaverecords ;
     }
 
+
     @Override
     public LeaveRecordsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -36,10 +37,10 @@ public class LeaveRecordsAdapter extends RecyclerView.Adapter<LeaveRecordsAdapte
         holder.reason.setText("Reason: " + leaverecords.get(position).getReason());
         holder.status.setText("Status: " + leaverecords.get(position).getStatus());
         String status = leaverecords.get(position).getStatus();
-        if (status.equals("Pending")) {
+        if (status.toLowerCase().equals("pending")) {
             holder.status.setBackgroundResource(R.drawable.eclipse_drawable_warning);
 
-        } else if (status.equals("Approved")) {
+        } else if (status.toLowerCase().equals("approved")) {
             holder.status.setBackgroundResource(R.drawable.eclipse_drawable_success);
         } else {
             holder.status.setBackgroundResource(R.drawable.eclipse_drawable_error);
