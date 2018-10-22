@@ -5,8 +5,23 @@ import com.google.gson.annotations.SerializedName;
 public class LeaveRecords {
     @SerializedName( "id" )
     int Pk;
-    int employee, days;
-    String leavetype,status,reason,from_date,to_date,submit_date;
+    @SerializedName( "employee" )
+    int employee;
+    @SerializedName( "days" )
+    int days;
+    @SerializedName( "leavetype" )
+    String leavetype;
+    @SerializedName( "status" )
+    String status;
+    @SerializedName( "reason" )
+    String reason;
+    @SerializedName( "from_date" )
+    String from_date;
+    @SerializedName( "to_date" )
+    String to_date;
+    @SerializedName( "submit_date" )
+    String submit_date;
+    @SerializedName( "excess" )
     boolean excess;
 
     public int getPk() {

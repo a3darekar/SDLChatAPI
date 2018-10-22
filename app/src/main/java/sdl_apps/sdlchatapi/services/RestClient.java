@@ -5,11 +5,13 @@ import java.util.List;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
@@ -34,6 +36,8 @@ public interface RestClient {
 
     String FCM_REGISTRATION = "/api/devices/";
 
+    String UPDATE_LEAVERECORDS = "/api/leaverecords/{id}/";
+
     @Multipart
     @POST(LOGIN_URL)
     Call<User> login(
@@ -41,36 +45,25 @@ public interface RestClient {
             @Part("password") RequestBody password);
 
     @GET(GET_USER_URL)
-    Call<User> getUser(
-            @Header("Authorization") String token
-    );
+    Call<User> getUser();
 
     @GET(GET_LEAVE_APPROVAL_URL)
-    Call<List<LeaveRecords>> getLeaveHistory(
-            @Header("Authorization") String token
-    );
+    Call<List<LeaveRecords>> getLeaveHistory();
 
 
     @GET(GET_LEAVES_URL)
-    Call<List<Leaves>> getLeaves(
-            @Header("Authorization") String token
-    );
+    Call<List<Leaves>> getLeaves();
 
     @GET(GET_PENDING_LEAVES_URL)
-    Call<List<LeaveRecords>> getPendingLeaves(
-            @Header("Authorization") String token
-    );
+    Call<List<LeaveRecords>> getPendingLeaves();
 
 
     @GET(GET_PENDING_LEAVES_URL)
-    Call<List<LeaveRecords>> getApproved(
-            @Header("Authorization") String token
-    );
+    Call<List<LeaveRecords>> getApproved();
 
     @POST(GET_LEAVE_RECORDS_URL)
     @FormUrlEncoded
     Call<LeaveRecords> applyLeave(
-            @Header("Authorization") String token,
             @Field("reason") String reason,
             @Field("to_date") String from,
             @Field("from_date") String to
@@ -86,11 +79,9 @@ public interface RestClient {
             @Field("type") String type
     );
 
-    @PUT("/api/leaverecords/{id}/")
-    @FormUrlEncoded
+    @PATCH(UPDATE_LEAVERECORDS)
     Call<LeaveRecords> approveLeave(
-            @Header( "Authorization" ) String token,
-            @Field( "status" ) String status,
+            @Body LeaveRecords leaveRecords,
             @Path( "id" ) int id
         );
 }

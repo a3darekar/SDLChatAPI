@@ -65,7 +65,6 @@ public class ApproveAdapter extends RecyclerView.Adapter<ApproveAdapter.ViewHold
             @Override
             public void onClick(View view) {
                 leaverecords.get(position).setStatus( "approve" );
-                Log.d("PK:::", String.valueOf( leaverecords.get( position ).getPk() ) );
                 LoginManager loginManager = new LoginManager( context );
             HashMap<String, String> userDetails;
             userDetails = loginManager.getUserDetails();
@@ -75,7 +74,7 @@ public class ApproveAdapter extends RecyclerView.Adapter<ApproveAdapter.ViewHold
             RestClient client = RetrofitServiceGenerator.config(RestClient.class);
             progressDialog.show();
 
-            Call<LeaveRecords> call = client.approveLeave(token, leaverecords.get(position).getStatus(), leaverecords.get(position).getPk());
+            Call<LeaveRecords> call = client.approveLeave(leaverecords.get(position), leaverecords.get(position).getPk());
             call.enqueue(new Callback<LeaveRecords>() {
                 @Override
                 public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
@@ -100,7 +99,6 @@ public class ApproveAdapter extends RecyclerView.Adapter<ApproveAdapter.ViewHold
             @Override
             public void onClick(View view) {
                 leaverecords.get(position).setStatus( "approve" );
-                Log.d("PK:::", String.valueOf( leaverecords.get( position ).getPk() ) );
                 LoginManager loginManager = new LoginManager( context );
                 HashMap<String, String> userDetails;
                 userDetails = loginManager.getUserDetails();
@@ -110,7 +108,7 @@ public class ApproveAdapter extends RecyclerView.Adapter<ApproveAdapter.ViewHold
                 RestClient client = RetrofitServiceGenerator.config(RestClient.class);
                 progressDialog.show();
 
-                Call<LeaveRecords> call = client.approveLeave(token, leaverecords.get(position).getStatus(), leaverecords.get(position).getPk());
+                Call<LeaveRecords> call = client.approveLeave(leaverecords.get(position), leaverecords.get(position).getPk());
                 call.enqueue(new Callback<LeaveRecords>() {
                     @Override
                     public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {

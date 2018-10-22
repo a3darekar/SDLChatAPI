@@ -110,135 +110,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener( this );
     }
 
-    private void apply() {
-        final User user = Constants.user;
-        final String token = "Token " + userDetails.get(loginManager.LOGIN_KEY);
-
-
-        final Calendar myCalendar = Calendar.getInstance();
-
-
-        @SuppressLint("InflateParams") View view1 = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_apply, null);
-        ReasonView = view1.findViewById(R.id.ReasonView);
-
-        from = view1.findViewById(R.id.from);
-        to = view1.findViewById(R.id.to);
-
-        from.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                              int dayOfMonth) {
-                            myCalendar.set(Calendar.YEAR, year);
-                            myCalendar.set(Calendar.MONTH, monthOfYear);
-                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                            from.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
-                        }
-
-                    };
-                    new DatePickerDialog(MainActivity.this, date, myCalendar
-                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-                }
-            }
-        });
-
-        to.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                              int dayOfMonth) {
-                            myCalendar.set(Calendar.YEAR, year);
-                            myCalendar.set(Calendar.MONTH, monthOfYear);
-                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                            to.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
-                        }
-
-                    };
-                    new DatePickerDialog(MainActivity.this, date, myCalendar
-                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-                }
-            }
-        });
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            if (view1.getParent() != null) {
-                ((ViewGroup) view1.getParent()).removeView(view1);
-            }
-            builder.setView(view1);
-        builder.setTitle(R.string.apply);
-            builder.setPositiveButton(getString(R.string.apply), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    {
-                        if (ReasonView.getText().toString().isEmpty()) {
-                            ReasonView.setError( getString( R.string.cannot_be_empty ) );
-                        } else if (from.toString().isEmpty()) {
-                            from.setError(getString(R.string.cannot_be_empty));
-                        } else if (to.toString().isEmpty()) {
-                            to.setError(getString(R.string.cannot_be_empty));
-                        } else {
-                            String reason = ReasonView.getText().toString();
-                            String from_date = from.getText().toString();
-                            String to_date = to.getText().toString();
-                            int pk = user.getPk();
-
-                            RestClient client = RetrofitServiceGenerator.config(RestClient.class);
-                            Call<LeaveRecords> call = client.applyLeave(token, reason, from_date, to_date);
-
-                            call.enqueue( new Callback<LeaveRecords>() {
-                                @Override
-                                public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
-                                    Toast.makeText( MainActivity.this, R.string.apply_success, Toast.LENGTH_SHORT ).show();
-                                    Log.d("POST response", String.valueOf(response.code()));
-                                }
-                                @Override
-                                public void onFailure(Call<LeaveRecords> call, Throwable t) {
-
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-
-            builder.setCancelable(true);
-            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialogInterface) {
-                    ReasonView.setText("");
-                }
-            });
-
-            alertDialog = builder.create();
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.dismiss),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ReasonView.setText("");
-                            if (alertDialog.isShowing()) {
-                                alertDialog.dismiss();
-                            }
-                        }
-                    });
-            if (!alertDialog.isShowing()) {
-                alertDialog.show();
-            }
-        }
-
     private void initUI(int id) {
         //fetch Logged in User
         userDetails = loginManager.getUserDetails();
@@ -268,11 +139,11 @@ public class MainActivity extends AppCompatActivity
     private void getApprove(String token, final User user) {
         final ProgressDialog progressDialog = ProgressDialogConfig.config(MainActivity.this, getString(R.string.fetching_data));
 
-        RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+        RestClient client = RetrofitServiceGenerator.createService(RestClient.class, token);
         progressDialog.show();
 
         final ArrayList<LeaveRecords> leaves = new ArrayList<>();
-        Call<List<LeaveRecords>> call = client.getApproved(token);
+        Call<List<LeaveRecords>> call = client.getApproved();
         call.enqueue(new Callback<List<LeaveRecords>> () {
             @Override
             public void onResponse(Call<List<LeaveRecords>> call, Response<List<LeaveRecords>> response) {
@@ -301,7 +172,6 @@ public class MainActivity extends AppCompatActivity
                 progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, "Something Went Wrong! Please Try Again", Toast.LENGTH_SHORT).show();
                 Log.d(TAG,t.getMessage(), t);
-                loginManager.logOutUser();
             }
         });
     }
@@ -309,11 +179,11 @@ public class MainActivity extends AppCompatActivity
     private void getUser(final String token, final int id) {
         final ProgressDialog progressDialog = ProgressDialogConfig.config(MainActivity.this, getString(R.string.logging_in));
 
-        RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+        RestClient client = RetrofitServiceGenerator.createService(RestClient.class, token);
         progressDialog.show();
 
         final User[] user = new User[1];
-        Call<User> call = client.getUser(token);
+        Call<User> call = client.getUser();
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -355,7 +225,7 @@ public class MainActivity extends AppCompatActivity
         progressDialog.show();
 
         final ArrayList<LeaveRecords> leaves = new ArrayList<>();
-        Call<List<LeaveRecords>> call = client.getLeaveHistory(token);
+        Call<List<LeaveRecords>> call = client.getLeaveHistory();
         call.enqueue(new Callback<List<LeaveRecords>> () {
             @Override
             public void onResponse(Call<List<LeaveRecords>> call, Response<List<LeaveRecords>> response) {
@@ -391,11 +261,11 @@ public class MainActivity extends AppCompatActivity
     private void    getPending(String token, final User user) {
         final ProgressDialog progressDialog = ProgressDialogConfig.config(MainActivity.this, getString(R.string.fetching_data));
 
-        RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+        RestClient client = RetrofitServiceGenerator.createService(RestClient.class, token);
         progressDialog.show();
 
         final ArrayList<LeaveRecords> leaves = new ArrayList<>();
-        Call<List<LeaveRecords>> call = client.getPendingLeaves(token);
+        Call<List<LeaveRecords>> call = client.getPendingLeaves();
         call.enqueue(new Callback<List<LeaveRecords>> () {
             @Override
             public void onResponse(Call<List<LeaveRecords>> call, Response<List<LeaveRecords>> response) {
@@ -435,7 +305,7 @@ public class MainActivity extends AppCompatActivity
         progressDialog.show();
 
         final ArrayList<Leaves> leaves = new ArrayList<>();
-        Call<List<Leaves>> call = client.getLeaves(token);
+        Call<List<Leaves>> call = client.getLeaves();
         call.enqueue(new Callback<List<Leaves>> () {
             @Override
             public void onResponse(Call<List<Leaves>> call, Response<List<Leaves>> response) {
@@ -522,11 +392,142 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
+    private void apply() {
+        final User user = Constants.user;
+        final String token = "Token " + userDetails.get(loginManager.LOGIN_KEY);
+
+
+        final Calendar myCalendar = Calendar.getInstance();
+
+
+        @SuppressLint("InflateParams") View view1 = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_apply, null);
+        ReasonView = view1.findViewById(R.id.ReasonView);
+
+        from = view1.findViewById(R.id.from);
+        to = view1.findViewById(R.id.to);
+
+        from.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+                            myCalendar.set(Calendar.YEAR, year);
+                            myCalendar.set(Calendar.MONTH, monthOfYear);
+                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            from.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
+                        }
+
+                    };
+                    new DatePickerDialog(MainActivity.this, date, myCalendar
+                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                }
+            }
+        });
+
+        to.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+                            myCalendar.set(Calendar.YEAR, year);
+                            myCalendar.set(Calendar.MONTH, monthOfYear);
+                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            to.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
+                        }
+
+                    };
+                    new DatePickerDialog(MainActivity.this, date, myCalendar
+                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                }
+            }
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        if (view1.getParent() != null) {
+            ((ViewGroup) view1.getParent()).removeView(view1);
+        }
+        builder.setView(view1);
+        builder.setTitle(R.string.apply);
+        builder.setPositiveButton(getString(R.string.apply), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                {
+                    if (ReasonView.getText().toString().isEmpty()) {
+                        ReasonView.setError( getString( R.string.cannot_be_empty ) );
+                    } else if (from.toString().isEmpty()) {
+                        from.setError(getString(R.string.cannot_be_empty));
+                    } else if (to.toString().isEmpty()) {
+                        to.setError(getString(R.string.cannot_be_empty));
+                    } else {
+                        String reason = ReasonView.getText().toString();
+                        String from_date = from.getText().toString();
+                        String to_date = to.getText().toString();
+                        int pk = user.getPk();
+
+                        RestClient client = RetrofitServiceGenerator.createService(RestClient.class, token);
+                        Call<LeaveRecords> call = client.applyLeave(reason, from_date, to_date);
+
+                        call.enqueue( new Callback<LeaveRecords>() {
+                            @Override
+                            public void onResponse(Call<LeaveRecords> call, Response<LeaveRecords> response) {
+                                Toast.makeText( MainActivity.this, R.string.apply_success, Toast.LENGTH_SHORT ).show();
+                                Log.d("POST response", String.valueOf(response.code()));
+                            }
+                            @Override
+                            public void onFailure(Call<LeaveRecords> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        builder.setCancelable(true);
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                ReasonView.setText("");
+            }
+        });
+
+        alertDialog = builder.create();
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.dismiss),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ReasonView.setText("");
+                        if (alertDialog.isShowing()) {
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+        if (!alertDialog.isShowing()) {
+            alertDialog.show();
+        }
+    }
+
+
     public void registerFcm() {
         userDetails = loginManager.getUserDetails();
         String token = userDetails.get(loginManager.FCM_KEY);
         if (token != null) {
-            RestClient client = RetrofitServiceGenerator.config(RestClient.class);
+            RestClient client = RetrofitServiceGenerator.createService(RestClient.class, token);
             Call<ResponseBody> fcm_register = client.registerFCM(Constants.user.getEmail(), token, String.valueOf(Constants.user.getPk()), true, "android");
             fcm_register.enqueue(new Callback<ResponseBody>() {
                 @Override
